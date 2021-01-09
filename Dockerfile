@@ -1,10 +1,17 @@
-FROM litespeedtech/openlitespeed:1.6.18-lsphp74
+ARG OLS_VERSION=1.6.18
+ARG PHP_VERSION=lsphp74
+FROM litespeedtech/openlitespeed:$OLS_VERSION-$PHP_VERSION
 
 #install SSH
-RUN apt-get update; \
-     apt-get install --yes --no-install-recommends openssh-server; \
-     echo "root:Docker!" | chpasswd; \
-     rm -f /etc/ssh/sshd_config
+RUN set -ex; \
+	apt-get update; \
+    apt-get install -y --no-install-recommends \
+    openssh-server; \
+	rm -rf /var/lib/apt/lists/*
+
+RUN set -ex; \
+    echo "root:Docker!" | chpasswd; \
+    rm -f /etc/ssh/sshd_config
 
 COPY sshd_config /etc/ssh/
 COPY ssh_setup.sh /etc/ssh/
