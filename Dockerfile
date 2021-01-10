@@ -34,12 +34,15 @@ RUN ln -sf /dev/stderr /usr/local/lsws/logs/access.log; \
 
 # VOLUME /home/site/wwwroot
 
-EXPOSE 2222 80 
-# 7080
+EXPOSE 2222 80 7080
 
 ENV WEBSITE_ROLE_INSTANCE_ID localRoleInstance
 ENV WEBSITE_INSTANCE_ID localInstance
 
 WORKDIR /home/site/wwwroot
 
-CMD ["service ssh start"]
+COPY php-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/php-entrypoint.sh
+
+ENTRYPOINT ["php-entrypoint.sh"]
+CMD ["/entrypoint.sh"]
