@@ -4,10 +4,11 @@ FROM litespeedtech/openlitespeed:$OLS_VERSION-$PHP_VERSION
 
 #install SSH
 RUN set -ex; \
-	apt-get update; \
+    apt-get update; \
     apt-get install -y --no-install-recommends \
+    unzip \
     openssh-server; \
-	rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/*
 
 RUN set -ex; \
     echo "root:Docker!" | chpasswd; \

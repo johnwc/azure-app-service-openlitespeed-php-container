@@ -13,6 +13,17 @@ PHP version : `php -v | head -n 1 | cut -d ' ' -f 2`
 EOL
 cat /etc/motd
 
+if [ -z ${PHP_CRON+x} ]; then
+	export PHP_CRON='*/10 * * * *'
+fi
+
+cat >/etc/cron.d/phpcron <<EOL 
+${PHP_CRON} root cd /home/site/; if [ -e cron.sh ]; then /home/site/cron.sh > /home/site/cron.log 2>&1; fi; date > /home/site/cron-last-run
+EOL
+chmod 600 /etc/cron.d/php
+chmod 600 /etc/cron.d/phpcron
+
 service ssh start
+service cron start
 
 exec "$@"
