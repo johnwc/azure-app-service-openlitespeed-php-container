@@ -42,8 +42,10 @@ ENV WEBSITE_INSTANCE_ID localInstance
 
 WORKDIR /home/site/wwwroot
 
+COPY php-container-version /etc
 COPY php-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/php-entrypoint.sh
+RUN chmod 444 /etc/php-container-version; \
+	chmod +x /usr/local/bin/php-entrypoint.sh
 
 ENTRYPOINT ["php-entrypoint.sh"]
 CMD ["/entrypoint.sh"]
