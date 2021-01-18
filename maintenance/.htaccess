@@ -1,0 +1,4 @@
+RewriteEngine on
+RewriteCond %{DOCUMENT_ROOT}/sync_maintenance.html -f
+RewriteCond %{REQUEST_URI} !/sync_maintenance.html
+RewriteRule .* /sync_maintenance.html [L]
