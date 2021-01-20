@@ -16,9 +16,11 @@ Because FTP transactions are handled outside of the container to the durable sto
 | Linux         | Ubuntu 18.04 |
 | OpenLiteSpeed | 1.6.18       |
 | PHP           | 7.4          |
+| Composer      | latest       |
 
 * SSH has been enabled on port 2222 to be able to SSH to the container in Azure App Service.
 * A cron/scheduled task is setup to run `/home/site/cron.sh`, if it exists, every 10 minutes. Set `PHP_CRON` environment variable to a valid [cron formated](https://en.wikipedia.org/wiki/Cron) schedule to change from the default execute interval. The last `cron.sh` task run is logged to `/home/site/cron.log`
+* If a composer.lock file is found in the root of your site, `composer install` will be run to install any non-dev required packages.
 
 ## Container storage for site
 

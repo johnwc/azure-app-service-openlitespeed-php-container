@@ -41,7 +41,8 @@
           ],
           "linuxFxVersion": "DOCKER|johnwcarew/azure-app-service-openlitespeed-php:1.6.18-lsphp74",
           "appCommandLine": "",
-          "alwaysOn": true
+          "alwaysOn": true,
+          "http20Enabled": true
         },
         "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
         "clientAffinityEnabled": false

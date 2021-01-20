@@ -52,6 +52,11 @@ fi
 echo -e >&2 "${GREEN}Monitoring .htaccess changes.${NC}"
 (while read line; do if [ "$line" == ".htaccess" ]; then sleep 5; echo -e "${ORANGE}$line modified, gracefully restarting litespeed${NC}"; /usr/local/lsws/bin/lswsctrl try-restart; fi; done < <(inotifywait -m -e modify -e move -e create -e delete --format "%f" "/var/www/vhosts/site-local/wwwroot/")) &
 
+if [ -f /home/site/wwwroot/composer.lock ]; then
+	echo -e >&2 "${GREEN}Installing composer packages.${NC}"
+	composer install --no-dev --optimize-autoloader --no-interaction --working-dir=/home/site/wwwroot/
+fi
+
 SYNC_MAIN="/usr/src/maintenance/sync_maintenance.html"
 if [ -f /home/site/sync_maintenance.html ]; then
 	echo -e >&2 "${ORANGE}Using custom sync maintenance page.${NC}"

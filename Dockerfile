@@ -2,26 +2,29 @@ ARG OLS_VERSION=1.6.18
 ARG PHP_VERSION=lsphp74
 FROM litespeedtech/openlitespeed:$OLS_VERSION-$PHP_VERSION
 
-#install SSH
+# Install Package Requirement
 RUN set -ex; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
+    wget \
     rsync \
     unzip \
     inotify-tools \
     openssh-server; \
     rm -rf /var/lib/apt/lists/*
 
-RUN set -ex; \
-    echo "root:Docker!" | chpasswd; \
-    rm -f /etc/ssh/sshd_config
-
+# Setup SSH
+#RUN set -ex; \
+#    rm -f /etc/ssh/sshd_config
 COPY sshd_config /etc/ssh/
 COPY ssh_setup.sh /etc/ssh/
-RUN chmod -R +x /etc/ssh/ssh_setup.sh; \
-   (sleep 1;. /etc/ssh/ssh_setup.sh 2>&1 > /dev/null); \
-   rm -rf /etc/ssh/ssh_setup.sh
+RUN set -ex; \
+    echo "root:Docker!" | chpasswd; \
+    chmod -R +x /etc/ssh/ssh_setup.sh; \
+    (sleep 1;. /etc/ssh/ssh_setup.sh 2>&1 > /dev/null); \
+    rm -rf /etc/ssh/ssh_setup.sh
 
+# Install oSync
 ADD https://github.com/deajan/osync/archive/v1.3-beta3.tar.gz /root/osync.tar.gz
 COPY sync.conf /usr/src/php/
 RUN set -ex; \
@@ -37,6 +40,17 @@ RUN set -ex; \
     rm -rf osync*; \
     chmod 444 /usr/src/php/sync.conf
 
+# Install composer
+RUN set -ex; \
+    EXPECTED_CHECKSUM="$(wget -q -O - https://composer.github.io/installer.sig)"; \
+	curl -o composer-setup.php -fSL "https://getcomposer.org/installer"; \
+	echo "$EXPECTED_CHECKSUM *composer-setup.php" | sha384sum -c -; \
+    mkdir -p /usr/src/composer; \
+	php composer-setup.php --install-dir=/usr/src/composer; \
+	rm composer-setup.php; \
+    ln -s /usr/src/composer/composer.phar /usr/local/bin/composer
+
+# Configure LiteSpeed
 COPY phpsite.conf /usr/local/lsws/conf/templates/
 COPY httpd_config.conf /usr/local/lsws/conf/
 RUN chown 999:999 /usr/local/lsws/conf -R
